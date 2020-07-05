@@ -10,7 +10,6 @@ using SDG.Unturned;
 using Steamworks;
 using System.Threading;
 using AdminWarnings.Helpers;
-
 using logger = Rocket.Core.Logging.Logger;
 
 namespace AdminWarnings
@@ -19,6 +18,7 @@ namespace AdminWarnings
     {
         public static WarningsPlugin Instance;
         public static WarningUtilities util = new WarningUtilities();
+
         public override Rocket.API.Collections.TranslationList DefaultTranslations
         {
             get
@@ -29,8 +29,14 @@ namespace AdminWarnings
                     {"warning_reason", "You have been given a warning! Reason: '{0}'"},
                     {"warning_count_self", "You currently have {0} warnings!"},
                     {"warning_count_admin", "'{0}' currently has {1} warnings!"},
-                    {"warning_ban", "You have been banned because you reached {0} warnings! Ban duration (seconds): {1}"},
-                    {"warning_ban_reason", "You have been banned because you reached {0} warnings! Reason: '{1}' Ban duration (seconds): {2}"},
+                    {
+                        "warning_ban",
+                        "You have been banned because you reached {0} warnings! Ban duration (seconds): {1}"
+                    },
+                    {
+                        "warning_ban_reason",
+                        "You have been banned because you reached {0} warnings! Reason: '{1}' Ban duration (seconds): {2}"
+                    },
                     {"warning_kick", "You have been kicked because you reached {0} warnings!"},
                     {"warning_kick_reason", "You have been kicked because you reached {0} warnings! Reason: '{1}'"},
                     {"warned_caller", "You have warned player: {0}"},
@@ -40,17 +46,23 @@ namespace AdminWarnings
                     {"wrong_usage_removewarn", "Correct command usage: /removewarn <player> [amount]"},
                     {"console_player_warning", "'{0}' has warned '{1}', '{1}' is at {2} warnings"},
                     {"console_player_banned", "'{0}' has warned '{1}', '{1}' was banned for {2} seconds"},
-                    {"console_player_banned_reason", "'{0}' has warned '{1}', '{1}' was banned for {2} seconds with the reason '{3}'"},
+                    {
+                        "console_player_banned_reason",
+                        "'{0}' has warned '{1}', '{1}' was banned for {2} seconds with the reason '{3}'"
+                    },
                     {"console_player_kicked", "'{0}' has warned '{1}', '{1}' was kicked"},
                     {"console_player_kicked_reason", "'{0}' has warned '{1}', '{1}' was kicked with the reason '{2}'"},
                     {"public_player_banned", "'{0}' has received {1} warnings and was banned for {2} seconds!"},
                     {"public_player_kicked", "'{0}' has received {1} warnings and was kicked!"},
                     {"public_player_warned", "'{0}' has been giving a warning, they are currently at {1} warnings!"},
-                    {"console_warnings_noparameter", "You must enter a player when calling this command from the console!"},
+                    {
+                        "console_warnings_noparameter",
+                        "You must enter a player when calling this command from the console!"
+                    },
                     {"public_player_warned_reason", "'{0}' has been giving a warning! Reason: {1}"},
                     {"remove_warn", "Removed {0} warnings from '{1}'!"},
                     {"no_data", "'{0}' does not have any warnings!"},
-                    { "cleared_logs", "Cleared warning logs!" },
+                    {"cleared_logs", "Cleared warning logs!"},
                     {"console_command", "Ran command '{0}' because player:{1} hit {2} warnings"}
                 };
             }
@@ -80,7 +92,8 @@ namespace AdminWarnings
                 Thread.Sleep(delay);
                 foreach (var playerWarning in GetAllPlayerWarnings())
                 {
-                    if (GetDaysSinceWarning(playerWarning.DateAdded) >= WarningsPlugin.Instance.Configuration.Instance.DaysWarningsExpire)
+                    if (GetDaysSinceWarning(playerWarning.DateAdded) >=
+                        WarningsPlugin.Instance.Configuration.Instance.DaysWarningsExpire)
                     {
                         RemovePlayerData(playerWarning);
                     }
@@ -90,17 +103,19 @@ namespace AdminWarnings
 
         public int GetDaysSinceWarning(DateTime warningDate)
         {
-            return (int)(DateTime.Now - warningDate).TotalDays;
+            return (int) (DateTime.Now - warningDate).TotalDays;
         }
 
         public int GetPlayerWarnings(UnturnedPlayer P)
         {
-            return GetAllPlayerWarnings().FirstOrDefault(pWarning => pWarning.CSteamID.ToString() == P.CSteamID.ToString()).Warnings;
+            return GetAllPlayerWarnings()
+                .FirstOrDefault(pWarning => pWarning.CSteamID.ToString() == P.CSteamID.ToString()).Warnings;
         }
 
         public PlayerWarning GetPlayerData(UnturnedPlayer P)
         {
-            return GetAllPlayerWarnings().FirstOrDefault(pWarning => pWarning.CSteamID.ToString() == P.CSteamID.ToString());
+            return GetAllPlayerWarnings()
+                .FirstOrDefault(pWarning => pWarning.CSteamID.ToString() == P.CSteamID.ToString());
         }
 
         public void DecreasePlayerWarnings(UnturnedPlayer player, int amount)
@@ -120,7 +135,8 @@ namespace AdminWarnings
 
         public bool CheckIfHasData(UnturnedPlayer P)
         {
-            var pWarning = GetAllPlayerWarnings().FirstOrDefault(warning => warning.CSteamID.ToString() == P.CSteamID.ToString());
+            var pWarning = GetAllPlayerWarnings()
+                .FirstOrDefault(warning => warning.CSteamID.ToString() == P.CSteamID.ToString());
             if (pWarning == null) return false;
             return true;
         }
@@ -138,44 +154,54 @@ namespace AdminWarnings
 
                 if (!string.IsNullOrEmpty(point.ConsoleCommand))
                 {
-                    string cmd = ConsoleCommandHelper.FormatConsoleCommandString(point.ConsoleCommand.ToLower(), Player);
+                    var cmd = ConsoleCommandHelper.FormatConsoleCommandString(point.ConsoleCommand.ToLower(), Player);
                     CommandWindow.input.onInputText(cmd);
-                    logger.Log(WarningsPlugin.Instance.Translate("console_command", cmd, Player.DisplayName, point.WarningsToTrigger));
+                    logger.Log(WarningsPlugin.Instance.Translate("console_command", cmd, Player.DisplayName,
+                        point.WarningsToTrigger));
                 }
                 else if (point.KickPlayer)
                 {
                     if (reasonIncluded)
                     {
                         KickPlayer(Player, reason, pData.Warnings);
-                        LogWarning(WarningsPlugin.Instance.Translate("console_player_kicked_reason", GetPlayerName(caller), Player.DisplayName, reason));
+                        LogWarning(WarningsPlugin.Instance.Translate("console_player_kicked_reason",
+                            GetPlayerName(caller), Player.DisplayName, reason));
                     }
                     else
                     {
                         KickPlayer(Player, pData.Warnings);
-                        LogWarning(WarningsPlugin.Instance.Translate("console_player_kicked", GetPlayerName(caller), Player.DisplayName));
+                        LogWarning(WarningsPlugin.Instance.Translate("console_player_kicked", GetPlayerName(caller),
+                            Player.DisplayName));
                     }
+
                     actionTaken = true;
 
                     if (GetConfigAnnouceMessageServerWide())
-                        UnturnedChat.Say(WarningsPlugin.Instance.Translate("public_player_kicked", Player.DisplayName, pData.Warnings), GetMessageColor());
-
+                        UnturnedChat.Say(
+                            WarningsPlugin.Instance.Translate("public_player_kicked", Player.DisplayName,
+                                pData.Warnings), GetMessageColor());
                 }
                 else if (point.BanPlayer)
                 {
                     if (reasonIncluded)
                     {
                         BanPlayer(Player, reason, pData.Warnings, point.BanLengthSeconds, caller);
-                        LogWarning(WarningsPlugin.Instance.Translate("console_player_banned_reason", GetPlayerName(caller), Player.DisplayName, point.BanLengthSeconds, reason));
+                        LogWarning(WarningsPlugin.Instance.Translate("console_player_banned_reason",
+                            GetPlayerName(caller), Player.DisplayName, point.BanLengthSeconds, reason));
                     }
                     else
                     {
                         BanPlayer(Player, pData.Warnings, point.BanLengthSeconds, caller);
-                        LogWarning(WarningsPlugin.Instance.Translate("console_player_banned", GetPlayerName(caller), Player.DisplayName, point.BanLengthSeconds));
+                        LogWarning(WarningsPlugin.Instance.Translate("console_player_banned", GetPlayerName(caller),
+                            Player.DisplayName, point.BanLengthSeconds));
                     }
+
                     actionTaken = true;
 
                     if (GetConfigAnnouceMessageServerWide())
-                        UnturnedChat.Say(WarningsPlugin.Instance.Translate("public_player_banned", Player.DisplayName, pData.Warnings, point.BanLengthSeconds), GetMessageColor());
+                        UnturnedChat.Say(
+                            WarningsPlugin.Instance.Translate("public_player_banned", Player.DisplayName,
+                                pData.Warnings, point.BanLengthSeconds), GetMessageColor());
                 }
             }
 
@@ -190,7 +216,8 @@ namespace AdminWarnings
                     PrivateWarnPlayer(Player, pData, reason, reasonIncluded);
                 }
 
-                LogWarning(WarningsPlugin.Instance.Translate("console_player_warning", GetPlayerName(caller), Player.DisplayName, pData.Warnings));
+                LogWarning(WarningsPlugin.Instance.Translate("console_player_warning", GetPlayerName(caller),
+                    Player.DisplayName, pData.Warnings));
             }
 
             var allWarningPoints = GetAllWarningPoints();
@@ -203,22 +230,21 @@ namespace AdminWarnings
             if (caller is ConsolePlayer)
                 WarningLogger.LogWarning(0.ToString(), "*Console*", Player, reason);
             else
-                WarningLogger.LogWarning((UnturnedPlayer)caller, Player, reason);
-
+                WarningLogger.LogWarning((UnturnedPlayer) caller, Player, reason);
         }
 
         public void PublicWarnPlayer(UnturnedPlayer Player, PlayerWarning pData, string reason, bool reasonIncluded)
         {
-
             if (reasonIncluded)
-                TellPlayerWarning(Player, WarningsPlugin.Instance.Translate("public_player_warned_reason", Player.DisplayName, reason));
+                TellPlayerWarning(Player,
+                    WarningsPlugin.Instance.Translate("public_player_warned_reason", Player.DisplayName, reason));
             else
-                TellPlayerWarning(Player, WarningsPlugin.Instance.Translate("public_player_warned", Player.DisplayName, pData.Warnings));
+                TellPlayerWarning(Player,
+                    WarningsPlugin.Instance.Translate("public_player_warned", Player.DisplayName, pData.Warnings));
         }
 
         public void PrivateWarnPlayer(UnturnedPlayer Player, PlayerWarning pData, string reason, bool reasonIncluded)
         {
-
             if (reasonIncluded)
                 SendMessage(Player, WarningsPlugin.Instance.Translate("warning_reason", reason));
             else
@@ -233,7 +259,7 @@ namespace AdminWarnings
             }
             else
             {
-                return ((UnturnedPlayer)caller).DisplayName;
+                return ((UnturnedPlayer) caller).DisplayName;
             }
         }
 
@@ -280,25 +306,28 @@ namespace AdminWarnings
 
         public void BanPlayer(UnturnedPlayer player, int warnings, uint banDuration, IRocketPlayer caller)
         {
-            CSteamID judge = (CSteamID)0;
+            CSteamID judge = (CSteamID) 0;
             if (!(caller is ConsolePlayer))
             {
-                judge = ((UnturnedPlayer)caller).CSteamID;
+                judge = ((UnturnedPlayer) caller).CSteamID;
             }
 
-            SteamBlacklist.ban(player.CSteamID, GetIP(player.CSteamID), judge, WarningsPlugin.Instance.Translate("warning_ban", warnings, banDuration),
+            SteamBlacklist.ban(player.CSteamID, GetIP(player.CSteamID), judge,
+                WarningsPlugin.Instance.Translate("warning_ban", warnings, banDuration),
                 banDuration);
         }
 
-        public void BanPlayer(UnturnedPlayer player, string reason, int warnings, uint banDuration, IRocketPlayer caller)
+        public void BanPlayer(UnturnedPlayer player, string reason, int warnings, uint banDuration,
+            IRocketPlayer caller)
         {
-            CSteamID judge = (CSteamID)0;
+            CSteamID judge = (CSteamID) 0;
             if (!(caller is ConsolePlayer))
             {
-                judge = ((UnturnedPlayer)caller).CSteamID;
+                judge = ((UnturnedPlayer) caller).CSteamID;
             }
 
-            SteamBlacklist.ban(player.CSteamID, GetIP(player.CSteamID), judge, WarningsPlugin.Instance.Translate("warning_ban_reason", warnings, reason, banDuration),
+            SteamBlacklist.ban(player.CSteamID, GetIP(player.CSteamID), judge,
+                WarningsPlugin.Instance.Translate("warning_ban_reason", warnings, reason, banDuration),
                 banDuration);
         }
 
@@ -328,7 +357,8 @@ namespace AdminWarnings
         {
             UnityEngine.Color MsgColor;
 
-            MsgColor = UnturnedChat.GetColorFromName(WarningsPlugin.Instance.Configuration.Instance.MessageColor, UnityEngine.Color.green);
+            MsgColor = UnturnedChat.GetColorFromName(WarningsPlugin.Instance.Configuration.Instance.MessageColor,
+                UnityEngine.Color.green);
             return MsgColor;
         }
 

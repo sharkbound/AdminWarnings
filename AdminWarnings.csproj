@@ -76,7 +76,11 @@
     <Compile Include="WarningsPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include=".gitignore" />
+    <Content Include="BUILT_DLL\AdminWarnings.dll" />
+    <Content Include="BUILT_DLL\hashes.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>REM copy "$(TargetPath)" "C:\Users\owner\Desktop\Unturned\unturned\Servers\testserver\Rocket\Plugins\"</PostBuildEvent>

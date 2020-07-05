@@ -1,4 +1,0 @@
-C:\Users\owner\Desktop\GitHub\RocketModPlugins\AdminWarnings\AdminWarnings\bin\Debug\AdminWarnings.dll
-C:\Users\owner\Desktop\GitHub\RocketModPlugins\AdminWarnings\AdminWarnings\bin\Debug\AdminWarnings.pdb
-C:\Users\owner\Desktop\GitHub\RocketModPlugins\AdminWarnings\AdminWarnings\obj\Debug\AdminWarnings.dll
-C:\Users\owner\Desktop\GitHub\RocketModPlugins\AdminWarnings\AdminWarnings\obj\Debug\AdminWarnings.pdb
