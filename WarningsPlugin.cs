@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Rocket.Core.Plugins;
 using Rocket.Unturned.Player;
@@ -10,12 +11,16 @@ using SDG.Unturned;
 using Steamworks;
 using System.Threading;
 using AdminWarnings.Helpers;
+using Rocket.Unturned.Events;
+using Action = System.Action;
 using logger = Rocket.Core.Logging.Logger;
 
 namespace AdminWarnings
 {
     public class WarningsPlugin : RocketPlugin<WarningsConfig>
     {
+        public static MethodInfo onInputCommitted =
+            typeof(CommandWindow).GetMethod("onInputCommitted", BindingFlags.Instance | BindingFlags.NonPublic);
         public static WarningsPlugin Instance;
         public static WarningUtilities util = new WarningUtilities();
 
@@ -137,8 +142,7 @@ namespace AdminWarnings
         {
             var pWarning = GetAllPlayerWarnings()
                 .FirstOrDefault(warning => warning.CSteamID.ToString() == P.CSteamID.ToString());
-            if (pWarning == null) return false;
-            return true;
+            return pWarning != null;
         }
 
         public void WarnPlayer(IRocketPlayer caller, UnturnedPlayer Player, string reason, bool reasonIncluded)
@@ -150,12 +154,12 @@ namespace AdminWarnings
 
             if (MatchesWarningPoint(pData.Warnings))
             {
-                WarningPoint point = GetWarningPoint(pData.Warnings);
+                var point = GetWarningPoint(pData.Warnings);
 
                 if (!string.IsNullOrEmpty(point.ConsoleCommand))
                 {
                     var cmd = ConsoleCommandHelper.FormatConsoleCommandString(point.ConsoleCommand.ToLower(), Player);
-                    CommandWindow.input.onInputText(cmd);
+                    WarningsPlugin.onInputCommitted.Invoke(Dedicator.commandWindow, new object[]{cmd});
                     logger.Log(WarningsPlugin.Instance.Translate("console_command", cmd, Player.DisplayName,
                         point.WarningsToTrigger));
                 }
