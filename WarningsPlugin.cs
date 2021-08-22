@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using Rocket.Core.Plugins;
-using Rocket.Unturned.Player;
-using Rocket.API;
-using Rocket.Unturned.Chat;
-using SDG.Unturned;
-using Steamworks;
 using System.Threading;
 using AdminWarnings.Helpers;
-using Rocket.Unturned.Events;
-using Action = System.Action;
+using Rocket.API;
+using Rocket.API.Collections;
+using Rocket.Core.Plugins;
+using Rocket.Unturned.Chat;
+using Rocket.Unturned.Player;
+using SDG.Unturned;
+using Steamworks;
+using UnityEngine;
 using logger = Rocket.Core.Logging.Logger;
 
 namespace AdminWarnings
@@ -24,11 +23,11 @@ namespace AdminWarnings
         public static WarningsPlugin Instance;
         public static WarningUtilities util = new WarningUtilities();
 
-        public override Rocket.API.Collections.TranslationList DefaultTranslations
+        public override TranslationList DefaultTranslations
         {
             get
             {
-                return new Rocket.API.Collections.TranslationList
+                return new TranslationList
                 {
                     {"warning", "You have you given a warning! Current warnings: {0}"},
                     {"warning_reason", "You have been given a warning! Reason: '{0}'"},
@@ -357,12 +356,12 @@ namespace AdminWarnings
             return Provider.clients.FirstOrDefault(steamP => steamP.playerID.steamID.ToString() == ID);
         }
 
-        public UnityEngine.Color GetMessageColor()
+        public Color GetMessageColor()
         {
-            UnityEngine.Color MsgColor;
+            Color MsgColor;
 
             MsgColor = UnturnedChat.GetColorFromName(WarningsPlugin.Instance.Configuration.Instance.MessageColor,
-                UnityEngine.Color.green);
+                Color.green);
             return MsgColor;
         }
 
@@ -402,12 +401,12 @@ namespace AdminWarnings
 
         public static void Log(string msg)
         {
-            Rocket.Core.Logging.Logger.Log(msg);
+            logger.Log(msg);
         }
 
         public static void LogWarning(string msg)
         {
-            Rocket.Core.Logging.Logger.LogWarning(msg);
+            logger.LogWarning(msg);
         }
 
         public static void SendMessage(IRocketPlayer caller, string message)

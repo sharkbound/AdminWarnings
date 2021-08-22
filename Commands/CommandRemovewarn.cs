@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Rocket.Core.Commands;
-using Rocket.Unturned.Player;
+﻿using System.Collections.Generic;
 using Rocket.API;
-using Rocket.Unturned.Chat;
+using Rocket.Unturned.Player;
 
 namespace AdminWarnings
 {
@@ -19,7 +14,7 @@ namespace AdminWarnings
 
         public AllowedCaller AllowedCaller
         {
-            get { return Rocket.API.AllowedCaller.Both; }
+            get { return AllowedCaller.Both; }
         }
 
         public void Execute(IRocketPlayer caller, string[] command)

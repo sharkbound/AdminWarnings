@@ -1,6 +1,6 @@
-﻿using Rocket.API;
+﻿using System.Collections.Generic;
+using Rocket.API;
 using Rocket.Unturned.Player;
-using System.Collections.Generic;
 
 namespace AdminWarnings
 {
@@ -13,7 +13,7 @@ namespace AdminWarnings
 
         public AllowedCaller AllowedCaller
         {
-            get { return Rocket.API.AllowedCaller.Both; }
+            get { return AllowedCaller.Both; }
         }
 
         public void Execute(IRocketPlayer caller, string[] command)
